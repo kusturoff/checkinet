@@ -1,9 +1,12 @@
-import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -18,20 +21,43 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (!isNetworkAvailable()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(
+                    MainActivity.this);
+            builder.setMessage("Internet Connection Required")
+                    .setCancelable(false)
+                    .setPositiveButton("Retry",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(
+                                        DialogInterface dialog,
+                                        int id) {
+                                    // Restart the activity
+                                    Intent intent = new Intent(
+                                            MainActivity.this,
+                                            MainActivity.class);
+                                    finish();
+                                    startActivity(intent);
+                                }
 
-        mWebView = (WebView) findViewById(R.id.activity_main_webview);
-        WebSettings webSettings = mWebView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        mWebView.loadUrl("http://karthiktechfreak.blogspot.in/");
-        mWebView.setWebViewClient(new com.androidwebviewapp.karthik.MyAppWebViewClient(){
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                //hide loading image
-                findViewById(R.id.progressBar1).setVisibility(View.GONE);
-                //show webview
-                findViewById(R.id.activity_main_webview).setVisibility(View.VISIBLE);
-            }});
-
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+        else {
+            mWebView = (WebView) findViewById(R.id.activity_main_webview);
+            WebSettings webSettings = mWebView.getSettings();
+            webSettings.setJavaScriptEnabled(true);
+            mWebView.loadUrl("http://karthiktechfreak.blogspot.in/");
+            mWebView.setWebViewClient(new ru.kusturoff.myapplication.MyAppWebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    //hide loading image
+                    findViewById(R.id.progressBar1).setVisibility(View.GONE);
+                    //show webview
+                    findViewById(R.id.activity_main_webview).setVisibility(View.VISIBLE);
+                }
+            });
+        }
 
     }
 
@@ -71,5 +97,15 @@ public class MainActivity extends Activity {
         return intent;
     }
 
+    // Private class isNetworkAvailable
+    private boolean isNetworkAvailable() {
+        // Using ConnectivityManager to check for Network Connection
+        ConnectivityManager connectivityManager = (ConnectivityManager) this
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager
+                .getActiveNetworkInfo();
+        return activeNetworkInfo != null;
+    }
 
 }
+
