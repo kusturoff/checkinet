@@ -48,7 +48,7 @@ public class MainActivity extends Activity {
             WebSettings webSettings = mWebView.getSettings();
             webSettings.setJavaScriptEnabled(true);
             mWebView.loadUrl("http://karthiktechfreak.blogspot.in/");
-            mWebView.setWebViewClient(new ru.kusturoff.myapplication.MyAppWebViewClient() {
+            mWebView.setWebViewClient(new ru.kusturoff.myapplication.MyAppWebViewClient(this) {
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     //hide loading image
